@@ -62,8 +62,6 @@ public:
     void parseCodeFromFile(std::string filename);
     void parseCode(std::string code);
 
-    std::string toString() override{
-        return std::format("Bot ID:{}", getId());
-    }
+    std::string toString() override;
 
 };

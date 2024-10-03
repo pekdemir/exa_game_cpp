@@ -162,3 +162,7 @@ void Bot::parseCode(std::string code)
     }
     printState();
 }
+
+std::string Bot::toString(){
+    return std::format("Bot ID:{}\n", getId());
+}
