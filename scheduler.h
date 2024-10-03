@@ -8,6 +8,7 @@ class Scheduler{
     bool m_first_start = true;
 
 public:
+    Scheduler();
     void addBot(Bot* bot);
     bool cycle();
 };

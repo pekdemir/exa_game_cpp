@@ -8,6 +8,8 @@
 #include "room_entity.h"
 #include "register_intf.h"
 
+extern std::vector<std::string> split(const std::string& str, const std::string& delim);
+
 class Bot: public RoomEntity{
     struct Instruction{
         std::string m_opcode;

@@ -1,6 +1,10 @@
 #include "scheduler.h"
 #include <iostream>
 
+Scheduler::Scheduler()
+{
+}
+
 void Scheduler::addBot(Bot *bot)
 {
     m_bots.push_back(bot);

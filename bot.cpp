@@ -1,8 +1,8 @@
 #include <stdexcept>
-#include "bot.h"
 #include <format>
 #include <iostream>
 #include <fstream>
+#include "bot.h"
 
 bool Bot::step()
 {

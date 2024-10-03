@@ -1,7 +1,9 @@
 #include "globals.h"
 
-std::vector<std::string> split(const std::string& str, const std::string& delim)
-{
+Scheduler g_scheduler;
+Floor g_floor;
+
+std::vector<std::string> split(const std::string& str, const std::string& delim){
     std::vector<std::string> result;
     size_t start = 0;
 
@@ -14,4 +16,3 @@ std::vector<std::string> split(const std::string& str, const std::string& delim)
         result.emplace_back(str.begin() + start, str.end());
     return result;
 }
-
