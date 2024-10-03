@@ -62,5 +62,11 @@ void File::seek(int offset)
 
 std::string File::toString()
 {
-    return std::format("File ID:{}, Data:{}, Index:{}, isEOF:{}", getId(), m_data, m_index, isEOF());
+    std::string result = std::format("File ID:{}, Index:{}, isEOF:{}, ", getId(), m_index, isEOF());
+    result += "Data:[";
+    for(auto value : m_data){
+        result += std::format("{},", value);
+    }
+    result += "]\n";
+    return result;
 }
