@@ -1,10 +1,10 @@
 #pragma once
-#include <vector>
+#include <queue>
 #include "bot.h"
 class Bot;
 
 class Scheduler{
-    std::vector<Bot*> m_bots;
+    std::queue<Bot*> m_bots;
     bool m_first_start = true;
 
 public:

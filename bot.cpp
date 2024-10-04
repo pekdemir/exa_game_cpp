@@ -184,6 +184,16 @@ Bot::Bot(int bot_id): RoomEntity(bot_id)
 {
 }
 
+Bot::~Bot()
+{
+    std::cout << "Bot " << m_id << " destroyed\n";
+    for(auto reg : m_registers){
+        if(reg.second){
+            delete *reg.second;
+        }
+    }
+}
+
 bool Bot::cycle()
 {
     return step();

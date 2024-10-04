@@ -56,6 +56,7 @@ class Bot: public RoomEntity{
 
 public:
     Bot(int bot_id);
+    ~Bot();
     bool cycle();
     void exec();
     void printState();
