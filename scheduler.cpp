@@ -31,3 +31,8 @@ bool Scheduler::cycle()
     m_bots = stepped_bots;
     return m_bots.size() > 0;
 }
+
+bool Scheduler::isFirstStart()
+{
+    return m_first_start;
+}

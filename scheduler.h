@@ -11,4 +11,5 @@ public:
     Scheduler();
     void addBot(Bot* bot);
     bool cycle();
+    bool isFirstStart();
 };

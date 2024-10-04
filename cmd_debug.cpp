@@ -45,7 +45,30 @@ void CmdDebug::run()
                 std::cout << "variable <variable_id> - print variable details\n";
                 std::cout << "exit - exit the program\n";
         } else if (cmd_parts[0] == "code"){
-            std::cout << "Run\n";
+            if(!g_scheduler.isFirstStart()){
+                std::cout << "Code can only be entered before the scheduler is run\n"; 
+            }else{
+                auto which_bot = g_floor.getEntity(std::stoi(cmd_parts[1]));
+                if(which_bot){
+                    std::cout << "Enter code for bot " << cmd_parts[1] << ", enter <return> to finish\n";
+                    std::string code;
+                    std::string code_line;
+                    std::cout << "- ";
+                    std::getline(std::cin, code_line);
+                    while(code_line != ""){
+                        code += code_line + "\n";
+                        std::cout << "- ";
+                        std::getline(std::cin, code_line);
+                    }
+                    Bot* bot = dynamic_cast<Bot*>(which_bot);
+                    if(bot){
+                        bot->parseCode(code);
+                    }
+                }else{
+                    std::cout << "Bot not found\n";
+                }
+            }
+
         } else if (cmd_parts[0] == "add"){
             if(cmd_parts[1] == "room"){
                 g_floor.addRoom(new Room(std::stoi(cmd_parts[2]), std::stoi(cmd_parts[3]), std::stoi(cmd_parts[4])));
