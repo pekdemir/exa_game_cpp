@@ -39,12 +39,12 @@ class Bot: public RoomEntity{
     };
 
     std::vector<Instruction> m_instructions;
-    std::unordered_map<std::string, std::optional<RegisterIntf>> m_registers{
-        {"X", Register("X")},
-        {"T", Register("T")},
+    std::unordered_map<std::string, std::optional<RegisterIntf*>> m_registers{
+        {"X", new Register("X")},
+        {"T", new Register("T")},
         {"F", std::nullopt},
         {"M", std::nullopt},
-        {"PC", Register("PC")}      
+        {"PC", new Register("PC")}
     };
     std::unordered_map<std::string, int> m_labels;
 

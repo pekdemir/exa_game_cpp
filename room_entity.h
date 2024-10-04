@@ -5,6 +5,7 @@
 class Room;
 
 class RoomEntity {
+protected:
     int m_id;
     Room* m_room;
 

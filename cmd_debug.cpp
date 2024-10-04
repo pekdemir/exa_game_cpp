@@ -92,14 +92,20 @@ void CmdDebug::run()
             } else if (cmd_parts[1] == "variable"){
                 
             } else if (cmd_parts[1] == "link"){
-
+                auto room1 = g_floor.getRoom(std::stoi(cmd_parts[2]));
+                auto room2 = g_floor.getRoom(std::stoi(cmd_parts[3]));
+                if(room1 && room2){
+                    room1->addLink(std::stoi(cmd_parts[4]), room2);
+                } else {
+                    std::cout << "Invalid room id\n";
+                }
             } else {
                 std::cout << "Invalid add parameter\n";
             }
         } else if (cmd_parts[0] == "run"){
             std::cout << "Run\n";
         } else if (cmd_parts[0] == "step"){
-            std::cout << "Step\n";
+            g_scheduler.cycle();
         } else if (cmd_parts[0] == "room"){
             auto which_room = g_floor.getRoom(std::stoi(cmd_parts[1]));
             if(which_room){

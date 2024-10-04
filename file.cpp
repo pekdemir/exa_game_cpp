@@ -53,7 +53,7 @@ void File::seek(int offset)
 {
     int new_index = m_index + offset;
     if(new_index > m_data.size()){
-        m_index = m_data.size();
+        m_index = static_cast<int>(m_data.size());
     }else if(new_index < 0){
         m_index = 0;
     }

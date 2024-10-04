@@ -3,57 +3,151 @@
 #include <iostream>
 #include <fstream>
 #include "bot.h"
+#include "file.h"
 
 bool Bot::step()
 {
-    Instruction instruction = m_instructions[m_registers["PC"]->read()];
+    Instruction instruction = m_instructions[(*m_registers["PC"])->read()];
 
     if(instruction.m_opcode == "JUMP"){
         argCheck(instruction, 1);
         if(m_labels.find(instruction.m_args[0]) != m_labels.end()){
-            m_registers["PC"]->write(m_labels[instruction.m_args[0]]);
+            (*m_registers["PC"])->write(m_labels[instruction.m_args[0]]);
         } else {
-            throw std::invalid_argument(std::format("Label {} not found", instruction.m_args[0]));
+            throw std::runtime_error(std::format("Label {} not found", instruction.m_args[0]));
         }
     }else if(instruction.m_opcode == "LINK"){
         argCheck(instruction, 1);
+        int link_id = getValue(instruction.m_args[0]);
+        if(!move(link_id)){
+            throw std::runtime_error(std::format("Link {} not found", link_id));
+        }
+        if((*m_registers["F"])){
+            File* file = dynamic_cast<File*>((*m_registers["F"]));
+            if(file && file->move(link_id)){
+                throw std::runtime_error(std::format("Link {} not found", link_id));
+            }
+        }
     }else if(instruction.m_opcode == "COPY"){
         argCheck(instruction, 2);
+        auto dest = getRegister(instruction.m_args[1]);
+        auto source = getValue(instruction.m_args[0]);
+        (*m_registers[dest])->write(source);
     }else if(instruction.m_opcode == "ADDI"){
         argCheck(instruction, 3);
+        auto dest = getRegister(instruction.m_args[2]);
+        auto first = getValue(instruction.m_args[0]);
+        auto second = getValue(instruction.m_args[1]);
+        (*m_registers[dest])->write(first + second);
     }else if(instruction.m_opcode == "SUBI"){
         argCheck(instruction, 3);
+        auto dest = getRegister(instruction.m_args[2]);
+        auto first = getValue(instruction.m_args[0]);
+        auto second = getValue(instruction.m_args[1]);
+        (*m_registers[dest])->write(first - second);
     }else if(instruction.m_opcode == "MULI"){
         argCheck(instruction, 3);
+        auto dest = getRegister(instruction.m_args[2]);
+        auto first = getValue(instruction.m_args[0]);
+        auto second = getValue(instruction.m_args[1]);
+        (*m_registers[dest])->write(first * second);
     }else if(instruction.m_opcode == "DIVI"){
         argCheck(instruction, 3);
+        auto dest = getRegister(instruction.m_args[2]);
+        auto first = getValue(instruction.m_args[0]);
+        auto second = getValue(instruction.m_args[1]);
+        (*m_registers[dest])->write(first / second);
     }else if(instruction.m_opcode == "GRAB"){
         argCheck(instruction, 1);
+        int file_id = getValue(instruction.m_args[0]);
+        auto file_entity = m_room->getEntity(file_id);
+        File* file = dynamic_cast<File*>(file_entity);
+        if(file){
+            if(file->isGrabbed()){
+                throw std::runtime_error(std::format("File {} already grabbed", file_id));
+            }
+            file->reset();
+            file->grab();
+            (*m_registers["F"]) = file;
+        } else {
+            throw std::runtime_error(std::format("File {} not found", file_id));
+        }
     }else if(instruction.m_opcode == "DROP"){
+        if((*m_registers["F"])){
+            File* file = dynamic_cast<File*>((*m_registers["F"]));
+            if(file){
+                file->drop();
+                (*m_registers["F"]) = nullptr;
+            }
+        }else{
+            throw std::runtime_error("No file grabbed");
+        }
     }else if(instruction.m_opcode == "SEEK"){
         argCheck(instruction, 1);
+        if((*m_registers["F"])){
+            File* file = dynamic_cast<File*>((*m_registers["F"]));
+            if(file){
+                file->seek(getValue(instruction.m_args[0]));
+            }
+        }else{
+            throw std::runtime_error("No file grabbed");
+        }
     }else if(instruction.m_opcode == "HALT"){
         return false;
     }else if(instruction.m_opcode == "KILL"){
         // TODO
     }else if(instruction.m_opcode == "REPL"){
         argCheck(instruction, 1);
+        // TODO
     }else if(instruction.m_opcode == "TEST"){
         argCheck(instruction, 3);
+        auto first = getRegister(instruction.m_args[0]);
+        auto second_value = getValue(instruction.m_args[2]);
+        auto op = instruction.m_args[1];
+        auto first_value = (*m_registers[first])->read();
+        if(op == "=="){
+            (*m_registers["T"])->write(first_value == second_value);
+        }else if(op == "!="){
+            (*m_registers["T"])->write(first_value != second_value);
+        }else if(op == "<"){
+            (*m_registers["T"])->write(first_value < second_value);
+        }else if(op == ">"){
+            (*m_registers["T"])->write(first_value > second_value);
+        }else if(op == "<="){
+            (*m_registers["T"])->write(first_value <= second_value);
+        }else if(op == ">="){
+            (*m_registers["T"])->write(first_value >= second_value);
+        }else{
+            throw std::invalid_argument(std::format("Invalid operator {}", op));
+        }
     }else if(instruction.m_opcode == "FJMP"){
         argCheck(instruction, 1);
+        if((*m_registers["T"])->read() == 0){
+            if(m_labels.find(instruction.m_args[0]) != m_labels.end()){
+                (*m_registers["PC"])->write(m_labels[instruction.m_args[0]]);
+            } else {
+                throw std::runtime_error(std::format("Label {} not found", instruction.m_args[0]));
+            }
+        }
     }else if(instruction.m_opcode == "TJMP"){
         argCheck(instruction, 1);
+        if((*m_registers["T"])->read() != 0){
+            if(m_labels.find(instruction.m_args[0]) != m_labels.end()){
+                (*m_registers["PC"])->write(m_labels[instruction.m_args[0]]);
+            } else {
+                throw std::runtime_error(std::format("Label {} not found", instruction.m_args[0]));
+            }
+        }
     }else if(instruction.m_opcode == "MAKE"){
         // TODO
     }else if(instruction.m_opcode == "MARK"){
         // Do nothing
     }else{
-        throw std::invalid_argument(std::format("Unknown instruction {}", instruction.m_opcode));
+        throw std::runtime_error(std::format("Unknown instruction {}", instruction.m_opcode));
     }
 
 
-    m_registers["PC"]->write(m_registers["PC"]->read() + 1);
+    (*m_registers["PC"])->write((*m_registers["PC"])->read() + 1);
     return false;
 }
 
@@ -68,13 +162,13 @@ std::string Bot::getRegister(std::string arg)
     if(arg != "X" || arg != "T" || arg != "F" || arg != "M"){
        throw std::invalid_argument("Invalid register name");
     }
-    return m_registers[arg]->name();
+    return (*m_registers[arg])->name();
 }
 
 int Bot::getValue(std::string arg)
 {
     if(arg == "X" || arg == "T" || arg == "F" || arg == "M"){
-       return m_registers[arg]->read();
+       return (*m_registers[arg])->read();
     }
      return std::stoi(arg);
 }
@@ -115,7 +209,7 @@ void Bot::printState()
     std::cout << "Registers:\n";
     for (auto reg : m_registers){
         if (reg.second){
-            std::cout << reg.second->name() << ": " << reg.second->read() << "\n";
+            std::cout << (*reg.second)->name() << ": " << (*reg.second)->read() << "\n";
         }
     }
     std::cout << "Labels:\n";
@@ -124,7 +218,7 @@ void Bot::printState()
     }
     std::cout << "Instructions:\n";
     for(int i = 0; i < m_instructions.size(); i++){
-        if(i == m_registers["PC"]->read()){
+        if(i == (*m_registers["PC"])->read()){
             std::cout << ">";
         } else {
             std::cout << " ";
@@ -141,7 +235,7 @@ void Bot::parseCodeFromFile(std::string filename)
 {
     std::ifstream file(filename);
     if (!file.is_open()){
-        throw std::invalid_argument(std::format("File {} not found", filename));
+        throw std::runtime_error(std::format("File {} not found", filename));
     }
     std::string code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     parseCode(code);
