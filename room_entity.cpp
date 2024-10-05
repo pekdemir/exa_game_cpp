@@ -23,9 +23,9 @@ bool RoomEntity::move(int link_id)
 {
     // search all links of the current room
     auto new_room = m_room->getLink(link_id);
-    if (new_room){
+    if (new_room) {
         // move to the linked room
-        if(new_room->putEntity(this)){
+        if(new_room->putEntity(this)) {
             m_room->removeEntity(this);
             m_room = new_room;
             return true;

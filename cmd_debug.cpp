@@ -128,7 +128,7 @@ void CmdDebug::run()
         } else if (cmd_parts[0] == "file"){
             auto which_file = g_floor.getEntity(std::stoi(cmd_parts[1]));
             if(which_file){
-                std::cout << which_file->toString();
+                std::cout << which_file->toString() << "\n";
             }else{
                 std::cout << "File not found\n";
             }

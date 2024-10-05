@@ -20,4 +20,6 @@ public:
     virtual int read(){
         return m_value;
     }
+
+    virtual std::string toString() = 0;
 };

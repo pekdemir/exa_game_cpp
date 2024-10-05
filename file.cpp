@@ -67,6 +67,6 @@ std::string File::toString()
     for(auto value : m_data){
         result += std::format("{},", value);
     }
-    result += "]\n";
+    result += "]";
     return result;
 }

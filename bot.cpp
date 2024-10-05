@@ -24,7 +24,7 @@ bool Bot::step()
         }
         if(m_registers[ERegister::F]){
             File* file = dynamic_cast<File*>(m_registers[ERegister::F]);
-            if(file && file->move(link_id)){
+            if(file && !file->move(link_id)){
                 throw std::runtime_error(std::format("Link {} not found", link_id));
             }
         }
@@ -222,7 +222,7 @@ void Bot::printState()
     std::cout << "Registers:\n";
     for (auto reg : m_registers){
         if (reg.second){
-            std::cout << reg.second->name() << ": " << reg.second->read() << "\n";
+            std::cout << reg.second->toString() << "\n";
         }
     }
     std::cout << "Labels:\n";

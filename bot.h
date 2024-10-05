@@ -60,6 +60,10 @@ class Bot: public RoomEntity{
         int read() override{
             return m_value;
         }
+
+        std::string toString() override{
+            return std::format("Reg {}: {}", m_name, m_value);
+        }
     };
 
     std::vector<Instruction> m_instructions;
