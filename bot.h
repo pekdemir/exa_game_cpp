@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <optional>
 #include <format>
 #include "globals.h"
 #include "room_entity.h"
@@ -11,6 +10,16 @@
 extern std::vector<std::string> split(const std::string& str, const std::string& delim);
 
 class Bot: public RoomEntity{
+
+    enum class ERegister{
+        X = 1,
+        T,
+        F,
+        M,
+        PC,
+        undefined
+    };
+
     struct Instruction{
         std::string m_opcode;
         std::vector<std::string> m_args;
@@ -29,6 +38,21 @@ class Bot: public RoomEntity{
         Register(std::string name): RegisterIntf(name){
         }
 
+        static ERegister convertName(const std::string& name){
+            if (name == "X"){
+                return ERegister::X;
+            }else if (name == "T"){
+                return ERegister::T;
+            }else if (name == "F"){
+                return ERegister::F;
+            }else if (name == "M"){
+                return ERegister::M;
+            }else if (name == "PC"){
+                return ERegister::PC;
+            }
+            return ERegister::undefined;
+        }
+
         void write(int value) override{
             m_value = value;
         }
@@ -39,18 +63,18 @@ class Bot: public RoomEntity{
     };
 
     std::vector<Instruction> m_instructions;
-    std::unordered_map<std::string, std::optional<RegisterIntf*>> m_registers{
-        {"X", new Register("X")},
-        {"T", new Register("T")},
-        {"F", std::nullopt},
-        {"M", std::nullopt},
-        {"PC", new Register("PC")}
+    std::unordered_map<ERegister, RegisterIntf*> m_registers{
+        {ERegister::X, dynamic_cast<RegisterIntf*>(new Register("X"))},
+        {ERegister::T, dynamic_cast<RegisterIntf*>(new Register("T"))},
+        {ERegister::F, nullptr},
+        {ERegister::M, nullptr},
+        {ERegister::PC, dynamic_cast<RegisterIntf*>(new Register("PC"))}
     };
     std::unordered_map<std::string, int> m_labels;
 
     bool step();
     void run();
-    std::string getRegister(std::string arg);
+    ERegister getRegister(std::string arg);
     int getValue(std::string arg);
     void argCheck(Instruction instruction, int arg_count);
 
