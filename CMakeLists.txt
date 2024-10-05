@@ -11,6 +11,7 @@ target_sources(exa_game_cpp
         ./room.cpp
         ./scheduler.cpp
         ./room_entity.cpp
+        ./room_variable.cpp
         ./floor.cpp
         ./cmd_debug.cpp
         ./bot.cpp
