@@ -74,8 +74,8 @@ class Bot: public RoomEntity{
 
     bool step();
     void run();
-    ERegister getRegister(std::string arg);
-    int getValue(std::string arg);
+    ERegister getRegister(const std::string& arg);
+    int getValue(const std::string& arg);
     void argCheck(Instruction instruction, int arg_count);
 
 public:
@@ -84,8 +84,8 @@ public:
     bool cycle();
     void exec();
     void printState();
-    void parseCodeFromFile(std::string filename);
-    void parseCode(std::string code);
+    void parseCodeFromFile(const std::string& filename);
+    void parseCode(const std::string& code);
 
     std::string toString() override;
 

@@ -148,7 +148,7 @@ bool Bot::step()
 
 
     m_registers[ERegister::PC]->write(m_registers[ERegister::PC]->read() + 1);
-    return false;
+    return true;
 }
 
 void Bot::run()
@@ -157,20 +157,22 @@ void Bot::run()
     }
 }
 
-Bot::ERegister Bot::getRegister(std::string arg)
+Bot::ERegister Bot::getRegister(const std::string& arg)
 {
-    if(arg != "X" || arg != "T" || arg != "F" || arg != "M"){
+    ERegister reg = Register::convertName(arg);
+    if(reg == ERegister::undefined){
        throw std::invalid_argument("Invalid register name");
     }
-    return Register::convertName(arg);
+    return reg;
 }
 
-int Bot::getValue(std::string arg)
+int Bot::getValue(const std::string& arg)
 {
-    if(arg == "X" || arg == "T" || arg == "F" || arg == "M"){
-       return m_registers[Register::convertName(arg)]->read();
+    ERegister reg = Register::convertName(arg);
+    if(reg != ERegister::undefined){
+       return m_registers[reg]->read();
     }
-     return std::stoi(arg);
+    return std::stoi(arg);
 }
 
 void Bot::argCheck(Instruction instruction, int arg_count)
@@ -242,7 +244,7 @@ void Bot::printState()
     }
 }
 
-void Bot::parseCodeFromFile(std::string filename)
+void Bot::parseCodeFromFile(const std::string& filename)
 {
     std::ifstream file(filename);
     if (!file.is_open()){
@@ -252,7 +254,7 @@ void Bot::parseCodeFromFile(std::string filename)
     parseCode(code);
 }
 
-void Bot::parseCode(std::string code)
+void Bot::parseCode(const std::string& code)
 {
     m_instructions.clear();
     m_labels.clear();

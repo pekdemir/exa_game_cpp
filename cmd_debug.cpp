@@ -18,6 +18,7 @@ void CmdDebug::run()
 
     std::cout << "> ";
     std::getline(std::cin, cmd);
+    std::cin.clear();
 
     // std::cout << cmd << "\n";
     while(cmd != "exit"){
@@ -138,5 +139,6 @@ void CmdDebug::run()
         }
         std::cout << "> ";
         std::getline(std::cin, cmd);
+        std::cin.clear();
     }
 }
