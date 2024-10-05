@@ -3,19 +3,10 @@ project(exa_game_cpp VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(exa_game_cpp)
 
-target_sources(exa_game_cpp
-    PRIVATE
-        ./main.cpp
-        ./room.cpp
-        ./scheduler.cpp
-        ./room_entity.cpp
-        ./room_variable.cpp
-        ./floor.cpp
-        ./cmd_debug.cpp
-        ./bot.cpp
-        ./file.cpp
-        ./globals.cpp
+file(GLOB exa_game_cpp_src
+    "*.cpp"
 )
+
+add_executable(exa_game_cpp ${exa_game_cpp_src})
 
