@@ -4,6 +4,7 @@
 #include "room.h"
 #include "bot.h"
 #include "file.h"
+#include "room_variable.h"
 
 extern Scheduler g_scheduler;
 extern Floor g_floor;
@@ -91,7 +92,13 @@ void CmdDebug::run()
                     std::cout << "Room not found\n";
                 }
             } else if (cmd_parts[1] == "variable"){
-                
+                auto which_room = g_floor.getRoom(std::stoi(cmd_parts[3]));
+                if(which_room){
+                    auto variable = new RoomVariable(std::stoi(cmd_parts[2]));
+                    which_room->putEntity(variable);
+                }else{
+                    std::cout << "Room not found\n";
+                }
             } else if (cmd_parts[1] == "link"){
                 auto room1 = g_floor.getRoom(std::stoi(cmd_parts[2]));
                 auto room2 = g_floor.getRoom(std::stoi(cmd_parts[3]));
@@ -133,7 +140,12 @@ void CmdDebug::run()
                 std::cout << "File not found\n";
             }
         } else if (cmd_parts[0] == "variable"){
-            std::cout << "Variable\n";
+            auto which_variable = g_floor.getEntity(std::stoi(cmd_parts[1]));
+            if(which_variable){
+                std::cout << which_variable->toString() << "\n";
+            }else{
+                std::cout << "Variable not found\n";
+            }
         } else {
             std::cout << "Unknown command\n";
         }
