@@ -50,7 +50,7 @@ void CmdDebug::run()
             if(!g_scheduler.isFirstStart()){
                 std::cout << "Code can only be entered before the scheduler is run\n"; 
             }else{
-                auto which_bot = g_floor.getEntity(std::stoi(cmd_parts[1]));
+                auto which_bot = g_floor.getEntity(cmd_parts[1]);
                 if(which_bot){
                     std::cout << "Enter code for bot " << cmd_parts[1] << ", enter <return> to finish\n";
                     std::string code;
@@ -73,37 +73,37 @@ void CmdDebug::run()
 
         } else if (cmd_parts[0] == "add"){
             if(cmd_parts[1] == "room"){
-                g_floor.addRoom(new Room(std::stoi(cmd_parts[2]), std::stoi(cmd_parts[3]), std::stoi(cmd_parts[4])));
+                g_floor.addRoom(new Room(cmd_parts[2], std::stoi(cmd_parts[3]), std::stoi(cmd_parts[4])));
             } else if (cmd_parts[1] == "bot"){
-                auto which_room = g_floor.getRoom(std::stoi(cmd_parts[3]));
+                auto which_room = g_floor.getRoom(cmd_parts[3]);
                 if(which_room){
-                    auto bot = new Bot(std::stoi(cmd_parts[2]));
+                    auto bot = new Bot(cmd_parts[2]);
                     which_room->putEntity(bot);
                     g_scheduler.addBot(bot);
                 }else{
                     std::cout << "Room not found\n";
                 }
             } else if (cmd_parts[1] == "file"){
-                auto which_room = g_floor.getRoom(std::stoi(cmd_parts[3]));
+                auto which_room = g_floor.getRoom(cmd_parts[3]);
                 if(which_room){
-                    auto file = new File(std::stoi(cmd_parts[2]));
+                    auto file = new File(cmd_parts[2]);
                     which_room->putEntity(file);
                 }else{
                     std::cout << "Room not found\n";
                 }
             } else if (cmd_parts[1] == "variable"){
-                auto which_room = g_floor.getRoom(std::stoi(cmd_parts[3]));
+                auto which_room = g_floor.getRoom(cmd_parts[3]);
                 if(which_room){
-                    auto variable = new RoomVariable(std::stoi(cmd_parts[2]));
+                    auto variable = new RoomVariable(cmd_parts[2]);
                     which_room->putEntity(variable);
                 }else{
                     std::cout << "Room not found\n";
                 }
             } else if (cmd_parts[1] == "link"){
-                auto room1 = g_floor.getRoom(std::stoi(cmd_parts[2]));
-                auto room2 = g_floor.getRoom(std::stoi(cmd_parts[3]));
+                auto room1 = g_floor.getRoom(cmd_parts[2]);
+                auto room2 = g_floor.getRoom(cmd_parts[3]);
                 if(room1 && room2){
-                    room1->addLink(std::stoi(cmd_parts[4]), room2);
+                    room1->addLink(cmd_parts[4], room2);
                 } else {
                     std::cout << "Invalid room id\n";
                 }
@@ -115,7 +115,7 @@ void CmdDebug::run()
         } else if (cmd_parts[0] == "step"){
             g_scheduler.cycle();
         } else if (cmd_parts[0] == "room"){
-            auto which_room = g_floor.getRoom(std::stoi(cmd_parts[1]));
+            auto which_room = g_floor.getRoom(cmd_parts[1]);
             if(which_room){
                 std::cout << which_room->toString();
             }else{
@@ -124,7 +124,7 @@ void CmdDebug::run()
         } else if (cmd_parts[0] == "floor"){
             g_floor.printFloor();
         } else if (cmd_parts[0] == "bot"){
-            auto which_bot = g_floor.getEntity(std::stoi(cmd_parts[1]));
+            auto which_bot = g_floor.getEntity(cmd_parts[1]);
             if(which_bot){
                 std::cout << which_bot->toString();
                 Bot* bot = dynamic_cast<Bot*>(which_bot);
@@ -133,14 +133,14 @@ void CmdDebug::run()
                 std::cout << "Bot not found\n";
             }
         } else if (cmd_parts[0] == "file"){
-            auto which_file = g_floor.getEntity(std::stoi(cmd_parts[1]));
+            auto which_file = g_floor.getEntity(cmd_parts[1]);
             if(which_file){
                 std::cout << which_file->toString() << "\n";
             }else{
                 std::cout << "File not found\n";
             }
         } else if (cmd_parts[0] == "variable"){
-            auto which_variable = g_floor.getEntity(std::stoi(cmd_parts[1]));
+            auto which_variable = g_floor.getEntity(cmd_parts[1]);
             if(which_variable){
                 std::cout << which_variable->toString() << "\n";
             }else{

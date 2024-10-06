@@ -79,11 +79,11 @@ class Bot: public RoomEntity{
     bool step();
     void run();
     ERegister getRegister(const std::string& arg);
-    int getValue(const std::string& arg);
+    std::variant<int, std::string> getValue(const std::string& arg);
     void argCheck(Instruction instruction, int arg_count);
 
 public:
-    Bot(int bot_id);
+    Bot(const std::string& bot_id);
     ~Bot();
     bool cycle();
     void printState();

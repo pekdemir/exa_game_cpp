@@ -7,25 +7,26 @@
 class RoomEntity;
 
 class Room {
-    int m_id, m_row, m_col;
+    std::string m_id;
+    int m_row, m_col;
     std::vector<RoomEntity*> m_slots;
-    std::unordered_map<int, Room*> m_links;
+    std::unordered_map<std::string, Room*> m_links;
 
 
 public:
-    Room(int id, int row, int col);
+    Room(const std::string& id, int row, int col);
 
-    int getId();
+    std::string getId();
     
-    void addLink(int id, Room* entity);
+    void addLink(const std::string& id, Room* entity);
 
-    Room* getLink(int link_id);
+    Room* getLink(const std::string& link_id);
 
     bool putEntity(RoomEntity* entity);
 
     bool removeEntity(RoomEntity* entity);
 
-    RoomEntity* getEntity(int id);
+    RoomEntity* getEntity(const std::string& id);
 
     std::string toString();
 };

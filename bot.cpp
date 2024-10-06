@@ -18,59 +18,59 @@ bool Bot::step()
         }
     }else if(instruction.m_opcode == "LINK"){
         argCheck(instruction, 1);
-        int link_id = getValue(instruction.m_args[0]);
-        if(!move(link_id)){
-            throw std::runtime_error(std::format("Link {} not found", link_id));
+        auto link_id = getValue(instruction.m_args[0]);
+        if(!move(std::get<std::string>(link_id))){
+            throw std::runtime_error(std::format("Link {} not found", std::get<std::string>(link_id)));
         }
         if(m_registers[ERegister::F]){
             File* file = dynamic_cast<File*>(m_registers[ERegister::F]);
-            if(file && !file->move(link_id)){
-                throw std::runtime_error(std::format("Link {} not found", link_id));
+            if(file && !file->move(std::get<std::string>(link_id))){
+                throw std::runtime_error(std::format("Link {} not found", std::get<std::string>(link_id)));
             }
         }
     }else if(instruction.m_opcode == "COPY"){
         argCheck(instruction, 2);
         auto dest = getRegister(instruction.m_args[1]);
         auto source = getValue(instruction.m_args[0]);
-        m_registers[dest]->write(source);
+        m_registers[dest]->write(std::get<int>(source));
     }else if(instruction.m_opcode == "ADDI"){
         argCheck(instruction, 3);
         auto dest = getRegister(instruction.m_args[2]);
         auto first = getValue(instruction.m_args[0]);
         auto second = getValue(instruction.m_args[1]);
-        m_registers[dest]->write(first + second);
+        m_registers[dest]->write(std::get<int>(first) + std::get<int>(second));
     }else if(instruction.m_opcode == "SUBI"){
         argCheck(instruction, 3);
         auto dest = getRegister(instruction.m_args[2]);
         auto first = getValue(instruction.m_args[0]);
         auto second = getValue(instruction.m_args[1]);
-        m_registers[dest]->write(first - second);
+        m_registers[dest]->write(std::get<int>(first) - std::get<int>(second));
     }else if(instruction.m_opcode == "MULI"){
         argCheck(instruction, 3);
         auto dest = getRegister(instruction.m_args[2]);
         auto first = getValue(instruction.m_args[0]);
         auto second = getValue(instruction.m_args[1]);
-        m_registers[dest]->write(first * second);
+        m_registers[dest]->write(std::get<int>(first) * std::get<int>(second));
     }else if(instruction.m_opcode == "DIVI"){
         argCheck(instruction, 3);
         auto dest = getRegister(instruction.m_args[2]);
         auto first = getValue(instruction.m_args[0]);
         auto second = getValue(instruction.m_args[1]);
-        m_registers[dest]->write(first / second);
+        m_registers[dest]->write(std::get<int>(first) / std::get<int>(second));
     }else if(instruction.m_opcode == "GRAB"){
         argCheck(instruction, 1);
-        int file_id = getValue(instruction.m_args[0]);
-        auto file_entity = m_room->getEntity(file_id);
+        auto file_id = getValue(instruction.m_args[0]);
+        auto file_entity = m_room->getEntity(std::get<std::string>(file_id));
         File* file = dynamic_cast<File*>(file_entity);
         if(file){
             if(file->isGrabbed()){
-                throw std::runtime_error(std::format("File {} already grabbed", file_id));
+                throw std::runtime_error(std::format("File {} already grabbed", std::get<std::string>(file_id)));
             }
             file->reset();
             file->grab();
             m_registers[ERegister::F] = file;
         } else {
-            throw std::runtime_error(std::format("File {} not found", file_id));
+            throw std::runtime_error(std::format("File {} not found", std::get<std::string>(file_id)));
         }
     }else if(instruction.m_opcode == "DROP"){
         if(m_registers[ERegister::F]){
@@ -87,7 +87,7 @@ bool Bot::step()
         if(m_registers[ERegister::F]){
             File* file = dynamic_cast<File*>(m_registers[ERegister::F]);
             if(file){
-                file->seek(getValue(instruction.m_args[0]));
+                file->seek(std::get<int>(getValue(instruction.m_args[0])));
             }
         }else{
             throw std::runtime_error("No file grabbed");
@@ -102,7 +102,7 @@ bool Bot::step()
     }else if(instruction.m_opcode == "TEST"){
         argCheck(instruction, 3);
         auto first = getRegister(instruction.m_args[0]);
-        auto second_value = getValue(instruction.m_args[2]);
+        auto second_value = std::get<int>(getValue(instruction.m_args[2]));
         auto op = instruction.m_args[1];
         auto first_value = m_registers[first]->read();
         if(op == "=="){
@@ -166,13 +166,13 @@ Bot::ERegister Bot::getRegister(const std::string& arg)
     return reg;
 }
 
-int Bot::getValue(const std::string& arg)
+std::variant<int, std::string> Bot::getValue(const std::string& arg)
 {
     ERegister reg = Register::convertName(arg);
     if(reg != ERegister::undefined){
        return m_registers[reg]->read();
     }
-    return std::stoi(arg);
+    return arg;
 }
 
 void Bot::argCheck(Instruction instruction, int arg_count)
@@ -182,7 +182,7 @@ void Bot::argCheck(Instruction instruction, int arg_count)
     }
 }
 
-Bot::Bot(int bot_id): RoomEntity(bot_id)
+Bot::Bot(const std::string& bot_id): RoomEntity(bot_id)
 {
 }
 

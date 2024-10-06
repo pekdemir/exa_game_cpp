@@ -1,6 +1,6 @@
 #include "room_entity.h"
 
-RoomEntity::RoomEntity(int id): m_id(id), m_room(nullptr)
+RoomEntity::RoomEntity(const std::string& id): m_id(id), m_room(nullptr)
 {
 }
 
@@ -14,12 +14,12 @@ Room *RoomEntity::getRoom()
     return m_room;
 }
 
-int RoomEntity::getId()
+const std::string& RoomEntity::getId()
 {
     return m_id;
 }
 
-bool RoomEntity::move(int link_id)
+bool RoomEntity::move(const std::string& link_id)
 {
     // search all links of the current room
     auto new_room = m_room->getLink(link_id);

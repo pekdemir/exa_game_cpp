@@ -1,21 +1,21 @@
 #include "room.h"
 #include <format>
 
-Room::Room(int id, int row, int col): m_id(id), m_row(row), m_col(col), m_slots(row * col, nullptr)
+Room::Room(const std::string& id, int row, int col): m_id(id), m_row(row), m_col(col), m_slots(row * col, nullptr)
 {
 }
 
-int Room::getId()
+std::string Room::getId()
 {
     return m_id;
 }
 
-void Room::addLink(int id, Room *entity)
+void Room::addLink(const std::string& id, Room *entity)
 {
     m_links[id] = entity;
 }
 
-Room *Room::getLink(int link_id)
+Room *Room::getLink(const std::string& link_id)
 {
     auto it = m_links.find(link_id);
     if (it != m_links.end()){
@@ -47,7 +47,7 @@ bool Room::removeEntity(RoomEntity *entity)
     return false;
 }
 
-RoomEntity *Room::getEntity(int id)
+RoomEntity *Room::getEntity(const std::string& id)
 {
     for (auto entity : m_slots){
         if (entity && entity->getId() == id) return entity;

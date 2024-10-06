@@ -5,16 +5,16 @@
 
 
 class Floor{
-    std::unordered_map<int, Room*> m_rooms;
+    std::unordered_map<std::string, Room*> m_rooms;
 
 public:
     Floor();
 
     void addRoom(Room* room);
     
-    Room* getRoom(int room_id);
+    Room* getRoom(const std::string& room_id);
 
-    RoomEntity* getEntity(int entity_id);
+    RoomEntity* getEntity(const std::string& entity_id);
 
     void printFloor();
 };

@@ -11,7 +11,7 @@ class File: public RoomEntity, public RegisterIntf{
     bool m_is_grabbed = false;
 
 public:
-    File(int file_id);
+    File(const std::string& file_id);
 
     void reset();
     bool isEOF();

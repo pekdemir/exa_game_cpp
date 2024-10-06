@@ -1,7 +1,7 @@
 #include <format>
 #include "file.h"
 
-File::File(int file_id): RoomEntity(file_id), RegisterIntf("F"), m_index(0)
+File::File(const std::string& file_id): RoomEntity(file_id), RegisterIntf("F"), m_index(0)
 {
 }
 

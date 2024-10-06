@@ -10,7 +10,7 @@ void Floor::addRoom(Room *room)
     m_rooms[room->getId()] = room;
 }
 
-Room *Floor::getRoom(int room_id)
+Room *Floor::getRoom(const std::string& room_id)
 {
     auto it = m_rooms.find(room_id);
     if (it != m_rooms.end()){
@@ -19,7 +19,7 @@ Room *Floor::getRoom(int room_id)
     return nullptr;
 }
 
-RoomEntity *Floor::getEntity(int entity_id)
+RoomEntity *Floor::getEntity(const std::string& entity_id)
 {
     for (auto room : m_rooms){
         auto entity = room.second->getEntity(entity_id);

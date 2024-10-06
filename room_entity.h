@@ -6,19 +6,19 @@ class Room;
 
 class RoomEntity {
 protected:
-    int m_id;
+    std::string m_id;
     Room* m_room;
 
 public:
-    RoomEntity(int id);
+    RoomEntity(const std::string& id);
 
     void setRoom(Room* room);
 
     Room* getRoom();
 
-    int getId();
+    const std::string& getId();
 
-    bool move(int link_id);
+    bool move(const std::string& link_id);
 
     virtual std::string toString() = 0;
 };
