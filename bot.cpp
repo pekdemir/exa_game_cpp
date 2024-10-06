@@ -202,21 +202,6 @@ bool Bot::cycle()
     return step();
 }
 
-void Bot::exec()
-{
-    try{
-        while (step()){
-            printState();
-        }
-    }
-    catch(const std::exception& e){
-        std::cerr << e.what() << '\n';
-        // destroy the bot
-    }
-    
-    
-}
-
 void Bot::printState()
 {
     std::cout << "Registers:\n";

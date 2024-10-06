@@ -86,7 +86,6 @@ public:
     Bot(int bot_id);
     ~Bot();
     bool cycle();
-    void exec();
     void printState();
     void parseCodeFromFile(const std::string& filename);
     void parseCode(const std::string& code);

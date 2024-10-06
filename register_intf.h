@@ -9,6 +9,8 @@ public:
     RegisterIntf(std::string name): m_name(name), m_value(0){
     }
 
+    virtual ~RegisterIntf(){};
+
     std::string name(){
         return m_name;
     }
