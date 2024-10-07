@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <format>
+#include <variant>
 #include "globals.h"
 #include "room_entity.h"
 #include "register_intf.h"

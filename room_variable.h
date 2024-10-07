@@ -6,7 +6,7 @@ class RoomVariable: public RoomEntity{
     bool m_is_read_only;
 
 public:
-    RoomVariable(const std::string& room_var_id);
+    RoomVariable(const std::string& room_var_id, bool is_read_only);
     ~RoomVariable();
 
     int read();

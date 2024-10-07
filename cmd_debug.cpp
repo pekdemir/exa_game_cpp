@@ -75,12 +75,79 @@ void CmdDebug::run()
             }
         } else if (cmd_parts[0] == "load"){
             auto file_path = cmd_parts[1];
-            std::ifstream input(file_path());
-            picojson::value v;
-            std::string err;
-            input = picojson::parse(v, input, input, &err);
-            if (! err.empty()) {
-                std::cerr << err << std::endl;
+            std::ifstream input(file_path);
+            if(input.is_open()){
+                picojson::value v;
+                std::string err;
+                std::istream_iterator<char> begin(input);
+                std::istream_iterator<char> end;
+                auto output = picojson::parse(v, begin, end, &err);
+                if (! err.empty()) {
+                    std::cerr << err << std::endl;
+                }
+                std::cout << v.to_str() << "\n";
+                auto& obj = v.get<picojson::object>();
+                auto& rooms = obj["Rooms"].get<picojson::array>();
+                for (auto& room : rooms){
+                    auto& room_obj = room.get<picojson::object>();
+                    auto room_id = room_obj["id"].get<std::string>();
+                    auto row = room_obj["row"].get<std::string>();
+                    auto col = room_obj["col"].get<std::string>();
+                    g_floor.addRoom(new Room(room_id, std::stoi(row), std::stoi(col)));
+                }
+                auto& links = obj["Links"].get<picojson::array>();
+                for (auto& link : links){
+                    auto& link_obj = link.get<picojson::object>();
+                    auto room1 = link_obj["from"].get<std::string>();
+                    auto room2 = link_obj["to"].get<std::string>();
+                    auto link_id = link_obj["id"].get<std::string>();
+                    auto room1_ptr = g_floor.getRoom(room1);
+                    auto room2_ptr = g_floor.getRoom(room2);
+                    if(room1_ptr && room2_ptr){
+                        room1_ptr->addLink(link_id, room2_ptr);
+                    }
+                }
+                auto& bots = obj["Bots"].get<picojson::array>();
+                for (auto& bot : bots){
+                    auto& bot_obj = bot.get<picojson::object>();
+                    auto bot_id = bot_obj["id"].get<std::string>();
+                    auto room_id = bot_obj["room"].get<std::string>();
+                    auto room_ptr = g_floor.getRoom(room_id);
+                    if(room_ptr){
+                        auto bot_ptr = new Bot(bot_id);
+                        room_ptr->putEntity(bot_ptr);
+                        g_scheduler.addBot(bot_ptr);
+                    }
+                }
+                auto& files = obj["Files"].get<picojson::array>();
+                for (auto& file : files){
+                    auto& file_obj = file.get<picojson::object>();
+                    auto file_id = file_obj["id"].get<std::string>();
+                    auto room_id = file_obj["room"].get<std::string>();
+                    // TODO:extract data
+                    auto room_ptr = g_floor.getRoom(room_id);
+                    if(room_ptr){
+                        auto file_ptr = new File(file_id);
+                        room_ptr->putEntity(file_ptr);
+                    }
+                }
+                auto& variables = obj["Variables"].get<picojson::array>();
+                for (auto& variable : variables){
+                    auto& variable_obj = variable.get<picojson::object>();
+                    auto variable_id = variable_obj["id"].get<std::string>();
+                    auto room_id = variable_obj["room"].get<std::string>();
+                    auto value = variable_obj["value"].get<std::string>();
+                    auto read_only = variable_obj["read_only"].get<std::string>();
+                    auto room_ptr = g_floor.getRoom(room_id);
+                    if(room_ptr){
+                        auto variable_ptr = new RoomVariable(variable_id, true ? read_only == "true" : false);
+                        variable_ptr->write(std::stoi(value));
+                        room_ptr->putEntity(variable_ptr);
+                    }
+                }
+
+            }else{
+                std::cout << "File not found\n";
             }
         } else if (cmd_parts[0] == "add"){
             if(cmd_parts[1] == "room"){
@@ -105,7 +172,7 @@ void CmdDebug::run()
             } else if (cmd_parts[1] == "variable"){
                 auto which_room = g_floor.getRoom(cmd_parts[3]);
                 if(which_room){
-                    auto variable = new RoomVariable(cmd_parts[2]);
+                    auto variable = new RoomVariable(cmd_parts[2], true ? cmd_parts[4] == "true" : false);
                     which_room->putEntity(variable);
                 }else{
                     std::cout << "Room not found\n";

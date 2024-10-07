@@ -1,7 +1,7 @@
 #include <format>
 #include "room_variable.h"
 
-RoomVariable::RoomVariable(const std::string& room_var_id): RoomEntity(room_var_id), m_value{0}, m_is_read_only{false} {
+RoomVariable::RoomVariable(const std::string& room_var_id, bool is_read_only): RoomEntity(room_var_id), m_value{0}, m_is_read_only{is_read_only} {
 }
 
 RoomVariable::~RoomVariable()
