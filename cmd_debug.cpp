@@ -1,10 +1,12 @@
 #include <iostream>
+#include <fstream>
 #include "cmd_debug.h"
 #include "globals.h"
 #include "room.h"
 #include "bot.h"
 #include "file.h"
 #include "room_variable.h"
+#include "picojson.h"
 
 extern Scheduler g_scheduler;
 extern Floor g_floor;
@@ -32,6 +34,7 @@ void CmdDebug::run()
                 std::cout << "Commands:\n";
                 std::cout << "help - print this help message\n";
                 std::cout << "code <bot_id> - enter coding mode for bot\n";
+                std::cout << "load <json_file> - load floor config from JSON\n";
                 std::cout << "add - add an entity to the floor\n";
                 std::cout << "    room <room_id> <row> <col> - add a room to the floor\n";
                 std::cout << "    bot <bot_id> <room_id> - add a bot to the room\n";
@@ -70,7 +73,15 @@ void CmdDebug::run()
                     std::cout << "Bot not found\n";
                 }
             }
-
+        } else if (cmd_parts[0] == "load"){
+            auto file_path = cmd_parts[1];
+            std::ifstream input(file_path());
+            picojson::value v;
+            std::string err;
+            input = picojson::parse(v, input, input, &err);
+            if (! err.empty()) {
+                std::cerr << err << std::endl;
+            }
         } else if (cmd_parts[0] == "add"){
             if(cmd_parts[1] == "room"){
                 g_floor.addRoom(new Room(cmd_parts[2], std::stoi(cmd_parts[3]), std::stoi(cmd_parts[4])));
